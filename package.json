@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MegalonVII/SDH-GameThemeMusic.git"
+    "url": "git+https://github.com/cristorrian/SDH-GameThemeMusic.git"
   },
   "keywords": [
     "decky",
@@ -19,12 +19,12 @@
     "steam-deck",
     "deck"
   ],
-  "author": "OMGDuke, MegalonVII",
+  "author": "Cristorian",
   "license": "GPL-2.0-or-later",
   "bugs": {
-    "url": "https://github.com/MegalonVII/SDH-GameThemeMusic/issues"
+    "url": "https://github.com/cristorrian/SDH-GameThemeMusic/issues"
   },
-  "homepage": "https://github.com/MegalonVII/SDH-GameThemeMusic#readme",
+  "homepage": "https://github.com/cristorrian/SDH-GameThemeMusic#readme",
   "remote_binary": [
     {
       "name": "yt-dlp",
