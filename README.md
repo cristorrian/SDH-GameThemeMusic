@@ -2,6 +2,15 @@
 
 # No longer Maintained.
 
+## Fork Notes (Fixed)
+
+This fork includes a compatibility fix for current Steam Deck/Game Mode clients:
+
+- Keeps the `Change Theme Music` action inside the game settings wheel menu (context menu).
+- Fixes duplicate context-menu entries.
+- Improves automatic music download reliability.
+- Updates bundled `yt-dlp` remote binary to a newer release.
+
 [![Crowdin](https://badges.crowdin.net/sdh-gamethememusic/localized.svg)](https://crowdin.com/project/sdh-gamethememusic) [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://deckbrew.xyz/discord)
 
 Play theme songs on your game pages. Compatible with the [AudioLoader](https://github.com/EMERALD0874/SDH-AudioLoader) plugin (AudioLoader version >= 1.5.0).
