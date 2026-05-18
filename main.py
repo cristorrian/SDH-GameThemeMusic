@@ -5,6 +5,7 @@ import glob
 import json
 import os
 import ssl
+from pathlib import Path
 
 import aiohttp
 import certifi
@@ -46,6 +47,13 @@ class Plugin:
         return self.settings.getSetting(key, default)
 
     async def search_yt(self, term: str):
+        # Make sure the yt-dlp binary is executable
+        try:
+            path = Path(f"{decky.DECKY_PLUGIN_DIR}/bin/yt-dlp")
+            path.chmod(0o755) if path.exists() else None
+        except:
+            exit(1)
+
         # Add a check to make sure the process is still running before trying to terminate to avoid ProcessLookupError
         if self.yt_process is not None and self.yt_process.returncode is None:
             self.yt_process.terminate()
@@ -63,6 +71,7 @@ class Plugin:
             stdout=asyncio.subprocess.PIPE,
             # The returned JSON can get rather big, so we set a generous limit of 10 MB.
             limit=10 * 1024**2,
+            env={**os.environ, "LD_LIBRARY_PATH": "/usr/lib:/usr/lib64:/lib:/lib64"},
         )
 
     async def next_yt_result(self):
@@ -113,6 +122,7 @@ class Plugin:
             "-f",
             "bestaudio",
             stdout=asyncio.subprocess.PIPE,
+            env={**os.environ, "LD_LIBRARY_PATH": "/usr/lib:/usr/lib64:/lib:/lib64"},
         )
         if (
             result.stdout is None
@@ -126,6 +136,7 @@ class Plugin:
         if self.local_match(id) is not None:
             # Already downloaded—there's nothing we need to do.
             return
+        os.makedirs(self.music_path, exist_ok=True)
         process = await asyncio.create_subprocess_exec(
             f"{decky.DECKY_PLUGIN_DIR}/bin/yt-dlp",
             f"{id}",
@@ -135,10 +146,22 @@ class Plugin:
             "%(id)s.%(ext)s",
             "-P",
             self.music_path,
+            stderr=asyncio.subprocess.PIPE,
+            env={**os.environ, "LD_LIBRARY_PATH": "/usr/lib:/usr/lib64:/lib:/lib64"},
         )
-        await process.communicate()
+        _, stderr = await process.communicate()
+        if process.returncode != 0:
+            raise RuntimeError(stderr.decode(errors="replace"))
+
+        # Simple fix to make any lingering m4a files usable. Does nothing if fails.
+        music_path = Path(self.music_path)
+        try:
+            (f"{music_path}/{id}.m4a").rename(f"{music_path}/{id}.webm")
+        except:
+            pass
 
     async def download_url(self, url: str, id: str):
+        os.makedirs(self.music_path, exist_ok=True)
         async with aiohttp.ClientSession() as session:
             res = await session.get(url, ssl=self.ssl_context)
             res.raise_for_status()
